@@ -1,9 +1,14 @@
 package projects;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+
+import projects.dao.DbConnection;
 import projects.entity.Project;
 import projects.exception.DbException;
 import projects.service.ProjectService;
@@ -12,10 +17,15 @@ import projects.service.ProjectService;
 public class ProjectsApp {
 	private Scanner scanner = new Scanner(System.in);
 	private ProjectService projectService = new ProjectService();
+	@SuppressWarnings("unused")
+	private Project curProject;
+	
 	
 	
 	private List<String> operations = List.of(
-			"1) Add a project"
+			"1) Add a project",
+			"2) List projects",
+			"3) Select a project"
 	);
 	
 			
@@ -39,6 +49,15 @@ public class ProjectsApp {
 						createProject();
 						break;
 						
+					case 2:
+						listProjects();
+						break;
+						
+					case 3:
+						selectProject();
+						break;
+					
+						
 					default:
 						System.out.println("\n" + selection + " is not a valid selection. Try again.");
 						break;
@@ -53,6 +72,22 @@ public class ProjectsApp {
 				
 		
 	}
+	private void listProjects() {
+		@SuppressWarnings("unused")
+		List<Project> projects = projectService.fetchAllProjects();
+		
+	}
+
+	private void selectProject() {
+		listProjects();
+		Integer projectId = getIntInput("Enter a project ID to select a project");
+		
+		curProject = null;
+		
+		curProject = projectService.fetchProjectById(projectId);
+		
+	}
+
 	private int getUserSelection() {
 		printOperations();
 		Integer input = getIntInput("Enter a menu selection");
@@ -61,12 +96,13 @@ public class ProjectsApp {
 	
 	
 	public void printOperations() {
+			
 		System.out.println("\nThese are the available selections. Press the Enter key to quit");
-		for (String operation : operations) {
-	        System.out.println("  " + operation);
+		
+		
+		operations.forEach(line -> System.out.println(" " + line));
 
-		}
-
+		
 	}
 	public Integer getIntInput(String prompt) {
 	    String input = getStringInput(prompt);
